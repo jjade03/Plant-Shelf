@@ -14,11 +14,13 @@ namespace PlantInformationProject {
             "\n\nEnter the number corresponding with your selection: ");
             int option = Convert.ToInt32(Console.ReadLine());*/
             
-            plantInfo(path); // Prompts the user to enter their plant's information
+            //userPlantInfo(path);
+            outputPlantInfo(path);
         }
 
         // Future goal: Rather than have user enter any data they want, have them select from provided options unless stated otherwise
-        static void plantInfo(string path) {
+        /* Prompts the user to enter their plant's information */
+        private static void userPlantInfo(string path) {
             // Creates a FileStream object to write to the text file.
             string plantInfo = "";
 
@@ -50,15 +52,41 @@ namespace PlantInformationProject {
 
                 // TO DO: If no nickname, make species the heading
                 Console.WriteLine("\n" + plantNickname + "'s Information:");
-                // Inserts the plants nickname at the end of the file
+                // Inserts the plants nickname at the end of the file.
                 plantInfo = plantNickname + ",";
-            }
+            } 
             /* RECEIVE USER INPUT [END] */
             // Appends user's plant information to the string.
             plantInfo += plantSpecies + "," + plantAge + "," + waterFrequency + "," + sunRequirement + "," + userRegion + "," + plantLocation + "\n";
 
             // Write information to the file, then close it.
             File.AppendAllText(path, plantInfo);
+        }
+
+        /* Formats and outputs the user's plant information*/
+        private static void outputPlantInfo(string path) {
+            // Divides the file based on the parameters provided in 'separators'.
+            string fileContent = File.ReadAllText(path);
+            char[] separators = {',', '\n'};
+            string[] dividedInfo = fileContent.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            string[] readPlantInfo = new string[dividedInfo.Length];    // Formatted version of the file contents.
+
+            // Incremements through each element in the array.
+            for(int i = 0; i < dividedInfo.Length; i++) {
+                // Increments through each character of the given element in the array.
+                for(int k = 0; k < dividedInfo[i].Length; k++) {
+                    if(k == 0) {
+                        // Converts the first letter of each element to be uppercase.
+                        readPlantInfo[i] += char.ToUpper(dividedInfo[i][k]);
+                    } else {
+                        readPlantInfo[i] += dividedInfo[i][k];
+                    }
+                }
+            }
+
+            foreach(string element in readPlantInfo) {
+                Console.WriteLine(element);
+            }
         }
     }
 }
