@@ -52,36 +52,55 @@ namespace PlantInformationProject {
 
                 // TO DO: If no nickname, make species the heading
                 Console.WriteLine("\n" + plantNickname + "'s Information:");
-                // Inserts the plants nickname at the end of the file.
+                // Adds the plant's nickname to the string.
                 plantInfo = plantNickname + ",";
             } 
             /* RECEIVE USER INPUT [END] */
             // Appends user's plant information to the string.
-            plantInfo += plantSpecies + "," + plantAge + "," + waterFrequency + "," + sunRequirement + "," + userRegion + "," + plantLocation + "\n";
+            plantInfo += plantSpecies + "," + plantAge + "," + waterFrequency + "," + sunRequirement + "," + userRegion + "," + plantLocation + "\n,";
 
             // Write information to the file, then close it.
             File.AppendAllText(path, plantInfo);
         }
 
         /* Formats and outputs the user's plant information*/
+        // TO DO: Simplify and improve efficiency of method
         private static void outputPlantInfo(string path) {
             // Divides the file based on the parameters provided in 'separators'.
             string fileContent = File.ReadAllText(path);
-            char[] separators = {',', '\n'};
+            char[] separators = {','};
             string[] dividedInfo = fileContent.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            string[] readPlantInfo = new string[dividedInfo.Length];    // Formatted version of the file contents.
 
+            string[] formatInfo = new string[dividedInfo.Length];   // Holds the contents of the file with uppercases.
+
+            int numElements = 7;                                    // Max number of variables entered into file on each line.
+            int fileRows = File.ReadLines(path).Count();            // Gets the numbers of lines in the file.
+            int countElem = 0;                                      // Holds the current actual element position.
+            int rowCount = 0;                                       // Holds the current "row" position from the file contents.
+            string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
+
+            // Increments through each element in the array, making the first character of each element uppercase.
             // Incremements through each element in the array.
             for(int i = 0; i < dividedInfo.Length; i++) {
-                // Increments through each character of the given element in the array.
+                // Increments through each character of the current element in the array.
                 for(int k = 0; k < dividedInfo[i].Length; k++) {
                     if(k == 0) {
                         // Converts the first letter of each element to be uppercase.
-                        readPlantInfo[i] += char.ToUpper(dividedInfo[i][k]);
+                        formatInfo[i] += char.ToUpper(dividedInfo[i][k]);
                     } else {
-                        readPlantInfo[i] += dividedInfo[i][k];
+                        formatInfo[i] += dividedInfo[i][k];
                     }
                 }
+            }
+
+            // Increments through the array by 8 so that matching variables are inputted into the new array on the same row.
+            for(int i = 0; i < numElements; i++) {
+                for(int k = countElem; k < formatInfo.Length; k += 8) {
+                    readPlantInfo[countElem, rowCount] = formatInfo[k];
+                    rowCount++;
+                }
+                countElem++;
+                rowCount = 0;
             }
 
             foreach(string element in readPlantInfo) {
