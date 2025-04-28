@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
 
 namespace PlantInformationProject {
     class PlantShelf {
@@ -37,9 +38,6 @@ namespace PlantInformationProject {
             Console.Write("Enter Sunlight Requirement: ");
             string sunRequirement = Console.ReadLine() ?? "null";
 
-            Console.Write("Enter Your Region: ");
-            string userRegion = Console.ReadLine() ?? "null";
-
             Console.Write("Enter Plant's Location: ");
             string plantLocation = Console.ReadLine() ?? "null";
 
@@ -50,14 +48,13 @@ namespace PlantInformationProject {
                 Console.Write("Enter Nickname: ");
                 string plantNickname = Console.ReadLine() ?? "null";
 
-                // TO DO: If no nickname, make species the heading
-                Console.WriteLine("\n" + plantNickname + "'s Information:");
                 // Adds the plant's nickname to the string.
                 plantInfo = plantNickname + ",";
             } 
             /* RECEIVE USER INPUT [END] */
             // Appends user's plant information to the string.
-            plantInfo += plantSpecies + "," + plantAge + "," + waterFrequency + "," + sunRequirement + "," + userRegion + "," + plantLocation + "\n,";
+            plantInfo += $"Species:                    {plantSpecies},Age:                        {plantAge},Watering Frequency:         {waterFrequency}," +
+            $"Sunlight Requirement:       {sunRequirement},Location:                   {plantLocation},\n,";
 
             // Write information to the file, then close it.
             File.AppendAllText(path, plantInfo);
@@ -72,11 +69,12 @@ namespace PlantInformationProject {
             string[] dividedInfo = fileContent.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
             string[] formatInfo = new string[dividedInfo.Length];   // Holds the contents of the file with uppercases.
+            bool spaceCheck = false;                                // Checks if the current character is a space.
 
-            int numElements = 7;                                    // Max number of variables entered into file on each line.
-            int fileRows = File.ReadLines(path).Count();            // Gets the numbers of lines in the file.
+            int numElements = 6;                                    // Max number of variables entered into file on each line.
+            int fileRows = File.ReadLines(path).Count() - 1;        // Gets the numbers of lines in the file.
             int countElem = 0;                                      // Holds the current actual element position.
-            int rowCount = 0;                                       // Holds the current "row" position from the file contents.
+            int countCols = 0;                                      
             string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
 
             // Increments through each element in the array, making the first character of each element uppercase.
@@ -84,27 +82,51 @@ namespace PlantInformationProject {
             for(int i = 0; i < dividedInfo.Length; i++) {
                 // Increments through each character of the current element in the array.
                 for(int k = 0; k < dividedInfo[i].Length; k++) {
-                    if(k == 0) {
+                    if(k == 0 || spaceCheck == true) {
                         // Converts the first letter of each element to be uppercase.
                         formatInfo[i] += char.ToUpper(dividedInfo[i][k]);
+                        spaceCheck = false;
                     } else {
                         formatInfo[i] += dividedInfo[i][k];
+                    }
+                    // Checks if the current position is whitespace and saves the answer as a bool.
+                    if(char.IsWhiteSpace(dividedInfo[i][k])) {
+                        spaceCheck = true;
                     }
                 }
             }
 
             // Increments through the array by 8 so that matching variables are inputted into the new array on the same row.
             for(int i = 0; i < numElements; i++) {
-                for(int k = countElem; k < formatInfo.Length; k += 8) {
-                    readPlantInfo[countElem, rowCount] = formatInfo[k];
-                    rowCount++;
+                for(int k = countElem; k < formatInfo.Length; k += 7) {
+                    readPlantInfo[countElem, countCols] = formatInfo[k];
+                    countCols++;
                 }
                 countElem++;
-                rowCount = 0;
+                countCols = 0;
             }
-
+            Console.WriteLine($"rows: {fileRows}, cols: {countCols}");
+            // Outputs and further formats the file's contents for the user.
             foreach(string element in readPlantInfo) {
-                Console.WriteLine(element);
+                // Compares the max number of columns to the current.
+                if(/*ConsoleSize(countCols) == true*/countCols == fileRows) {
+                    Console.WriteLine("");
+                    countCols = 0;
+                }
+                Console.Write($"{element, -60}");
+                countCols++;
+            }
+        }
+
+        /* Finds the consoles current width and height */
+        private static void ConsoleSize(int countCols) {
+            var width = Console.WindowWidth;
+            var height = Console.WindowHeight;
+            int buffer = 80;
+
+            //Console.WriteLine($"width: {width}, height: {height}");
+            if(buffer * countCols > width) {
+                //Console.WriteLine("");
             }
         }
     }
