@@ -15,7 +15,7 @@ namespace PlantInformationProject {
             "\n\nEnter the number corresponding with your selection: ");
             int option = Convert.ToInt32(Console.ReadLine());*/
             
-            //userPlantInfo(path);
+            userPlantInfo(path);
             outputPlantInfo(path);
         }
 
@@ -68,14 +68,16 @@ namespace PlantInformationProject {
             char[] separators = {','};
             string[] dividedInfo = fileContent.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
-            string[] formatInfo = new string[dividedInfo.Length];   // Holds the contents of the file with uppercases.
-            bool spaceCheck = false;                                // Checks if the current character is a space.
+            string[] formatInfo = new string[dividedInfo.Length];          // Holds the contents of the file with uppercases.
+            bool spaceCheck = false;                                       // Checks if the current character is a space.
 
-            int numElements = 6;                                    // Max number of variables entered into file on each line.
-            int fileRows = File.ReadLines(path).Count() - 1;        // Gets the numbers of lines in the file.
-            int countElem = 0;                                      // Holds the current actual element position.
+            int numElements = 6;                                           // Max number of variables entered into file on each line.
+            int fileRows = File.ReadLines(path).Count() - 1;               // Gets the numbers of lines in the file.
+            int countElem = 0;                                             // Holds the current actual element position.
             int countCols = 0;                                      
             string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
+            //int maxCols = readPlantInfo.GetLength(1);                    // Holds the max number of columns in the array.  
+
 
             // Increments through each element in the array, making the first character of each element uppercase.
             // Incremements through each element in the array.
@@ -105,29 +107,69 @@ namespace PlantInformationProject {
                 countElem++;
                 countCols = 0;
             }
-            Console.WriteLine($"rows: {fileRows}, cols: {countCols}");
+
+            int difference = 0;                
+            int buffer = 80;        // Amount of space to reserve for each column in the output.
+            
+            // Determines the value of 'difference' .
+            for(int i = 1; i <= readPlantInfo.GetLength(1); i++) {
+                if(buffer * i > Console.WindowWidth) {
+                    difference++;
+                }
+            }
+
+            // Outputs the first row of columns in the output.
+            int temp = 0;
+            int y = 0;
+            int tempCount = 2;
+            int index = readPlantInfo.GetLength(1) - difference;
+            while(readPlantInfo.GetLength(1) > y) {
+                //Console.WriteLine("Loop Begin");
+                for(int x = 0; x < readPlantInfo.GetLength(0); x++) {
+                    // y must be equal to the current starting index. Reinitialize at bottom of for loop.
+                    // y must be less than the length of the array, taking into account the current max column count.
+                    for(; y < index; y++) {
+                        Console.Write($"{readPlantInfo[x, y], -60}");
+                        // when y is equal to the max row count, add a new line.
+                        if(readPlantInfo.GetLength(1) - tempCount == y) {
+                            Console.WriteLine("");
+                        }
+                    }
+                    y = temp;
+                }
+                temp += index;
+                y = temp;
+                index += difference;
+                tempCount--;
+                /*Console.WriteLine($"\nDifference: {difference}, Length: {readPlantInfo.GetLength(1)}, y: {y}, index: {index}, temp: {temp}," +
+                                 $"value: {readPlantInfo.GetLength(1) - (difference + 1) }");*/
+            }
+
             // Outputs and further formats the file's contents for the user.
-            foreach(string element in readPlantInfo) {
+            /*foreach(string element in readPlantInfo) {
                 // Compares the max number of columns to the current.
-                if(/*ConsoleSize(countCols) == true*/countCols == fileRows) {
+                if(countCols == fileRows) {
                     Console.WriteLine("");
                     countCols = 0;
                 }
                 Console.Write($"{element, -60}");
+                //ConsoleSize(countCols);
                 countCols++;
-            }
+            }*/
         }
 
-        /* Finds the consoles current width and height */
-        private static void ConsoleSize(int countCols) {
-            var width = Console.WindowWidth;
-            var height = Console.WindowHeight;
-            int buffer = 80;
-
-            //Console.WriteLine($"width: {width}, height: {height}");
-            if(buffer * countCols > width) {
-                //Console.WriteLine("");
+        /* Finds the difference between the max number of columns and the number of columns exceeding one row in the output. */
+        /*private static int calcDifference(int size, int difference) {
+            int buffer = 80;        // Amount of space to reserve for each column in the output.
+            
+            // Determines the value of 'difference' .
+            for(int i = 1; i <= size; i++) {
+                if(buffer * i > Console.WindowWidth) {
+                    difference++;
+                }
             }
-        }
+
+            return difference;
+        }*/
     }
 }
