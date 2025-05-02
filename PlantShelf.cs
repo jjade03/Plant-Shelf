@@ -15,7 +15,7 @@ namespace PlantInformationProject {
             "\n\nEnter the number corresponding with your selection: ");
             int option = Convert.ToInt32(Console.ReadLine());*/
             
-            userPlantInfo(path);
+            //userPlantInfo(path);
             outputPlantInfo(path);
         }
 
@@ -108,54 +108,32 @@ namespace PlantInformationProject {
                 countCols = 0;
             }
 
-            int difference = 0;                
-            int buffer = 80;        // Amount of space to reserve for each column in the output.
-            
-            // Determines the value of 'difference' .
-            for(int i = 1; i <= readPlantInfo.GetLength(1); i++) {
-                if(buffer * i > Console.WindowWidth) {
-                    difference++;
-                }
-            }
+            int evenRows = readPlantInfo.GetLength(1)/2;    // Defines the amount of full rows.
+            int y = 0;                  // Initializes the starting index.
+            int startIndex = 0;         // Saves the starting position for 'y'.
+            int perRow = 2;             // Defines the max number of columns.
+            int maxIndex = perRow;      // Defines the max index to be printed on a single row in the console.
+            int countRows = 0;          // Holds the number of rows printed to the console.
 
-            // Outputs the first row of columns in the output.
-            int temp = 0;
-            int y = 0;
-            int tempCount = 2;
-            int index = readPlantInfo.GetLength(1) - difference;
+            // Increments through the array, outputting two columns per row in the console.
             while(readPlantInfo.GetLength(1) > y) {
-                //Console.WriteLine("Loop Begin");
                 for(int x = 0; x < readPlantInfo.GetLength(0); x++) {
-                    // y must be equal to the current starting index. Reinitialize at bottom of for loop.
-                    // y must be less than the length of the array, taking into account the current max column count.
-                    for(; y < index; y++) {
+                    for(; y < maxIndex; y++) {
                         Console.Write($"{readPlantInfo[x, y], -60}");
-                        // when y is equal to the max row count, add a new line.
-                        if(readPlantInfo.GetLength(1) - tempCount == y) {
+                        // Add a new line when the end of the row is reached in the array.
+                        if(maxIndex - 1 == y) {
                             Console.WriteLine("");
                         }
                     }
-                    y = temp;
+                    y = startIndex;     // Reinitializes the starting position.
                 }
-                temp += index;
-                y = temp;
-                index += difference;
-                tempCount--;
-                /*Console.WriteLine($"\nDifference: {difference}, Length: {readPlantInfo.GetLength(1)}, y: {y}, index: {index}, temp: {temp}," +
-                                 $"value: {readPlantInfo.GetLength(1) - (difference + 1) }");*/
-            }
+                Console.WriteLine("");
 
-            // Outputs and further formats the file's contents for the user.
-            /*foreach(string element in readPlantInfo) {
-                // Compares the max number of columns to the current.
-                if(countCols == fileRows) {
-                    Console.WriteLine("");
-                    countCols = 0;
-                }
-                Console.Write($"{element, -60}");
-                //ConsoleSize(countCols);
-                countCols++;
-            }*/
+                y += perRow;            // Increments 'y' by the number of columns to be printed on one row.
+                startIndex = y;         // Reinitializes the starting position of 'y'.
+                countRows++;
+                maxIndex = (countRows == evenRows) ? maxIndex += 1: maxIndex += perRow;
+            }
         }
 
         /* Finds the difference between the max number of columns and the number of columns exceeding one row in the output. */
