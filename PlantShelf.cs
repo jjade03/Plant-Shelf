@@ -15,49 +15,73 @@ namespace PlantInformationProject {
             "\n\nEnter the number corresponding with your selection: ");
             int option = Convert.ToInt32(Console.ReadLine());*/
             
-            //userPlantInfo(path);
-            outputPlantInfo(path);
+            userPlantInfo(path);
+            //outputPlantInfo(path);
         }
 
         // Future goal: Rather than have user enter any data they want, have them select from provided options unless stated otherwise
         /* Prompts the user to enter their plant's information */
         private static void userPlantInfo(string path) {
             // Creates a FileStream object to write to the text file.
-            string plantInfo = "";
+            string plantInfo;
 
             /* RECEIVES USER INPUT [START] */
-            Console.Write("Enter Plant Species: ");
-            string plantSpecies = Console.ReadLine() ?? "null";
+            string speciesPrompt = "Enter Plant Species: ";
+            string plantSpecies = charLimit(speciesPrompt);
 
-            Console.Write("Enter Plant's Age: ");
-            int plantAge = Convert.ToInt32(Console.ReadLine());
+            string agePrompt = "Enter Plant's Age: ";
+            int plantAge = Convert.ToInt32(charLimit(agePrompt));
 
-            Console.Write("Enter Watering Frequency: ");
-            string waterFrequency = Console.ReadLine() ?? "null";
+            string waterPrompt = "Enter Watering Frequency: ";
+            string waterFrequency = charLimit(waterPrompt);
 
-            Console.Write("Enter Sunlight Requirement: ");
-            string sunRequirement = Console.ReadLine() ?? "null";
+            string sunPrompt = "Enter Sunlight Requirement: ";
+            string sunRequirement = charLimit(sunPrompt);
 
-            Console.Write("Enter Plant's Location: ");
-            string plantLocation = Console.ReadLine() ?? "null";
+            string locationPrompt = "Enter Plant's Location in Room: ";
+            string plantLocation = charLimit(locationPrompt);
 
-            Console.Write("Does your plant have a nickname? (Enter 'yes' or 'no'): ");
-            string checkName = Console.ReadLine() ?? "null";
+            string checkNamePrompt = "Does your plant have a nickname? (Enter 'yes' or 'no'): ";
+            Console.Write(checkNamePrompt);
+            string checkName = Console.ReadLine().ToLower();
+
+            while(checkName != "yes" && checkName != "no") {
+                Console.Write("Invalid answer given: '" + checkName+ "'. " + checkNamePrompt);
+                checkName = Console.ReadLine().ToLower();
+            }
 
             if(checkName == "yes") {
-                Console.Write("Enter Nickname: ");
-                string plantNickname = Console.ReadLine() ?? "null";
+                string nicknamePrompt = "Enter Nickname: ";
+                string plantNickname = charLimit(nicknamePrompt);
 
                 // Adds the plant's nickname to the string.
                 plantInfo = plantNickname + ",";
-            } 
+            } else {
+                plantInfo = null + ",";
+            }
             /* RECEIVE USER INPUT [END] */
             // Appends user's plant information to the string.
             plantInfo += $"Species:                    {plantSpecies},Age:                        {plantAge},Watering Frequency:         {waterFrequency}," +
-            $"Sunlight Requirement:       {sunRequirement},Location:                   {plantLocation},\n,";
+            $"Sunlight Requirement:       {sunRequirement},Room Location:              {plantLocation},\n,";
 
             // Write information to the file, then close it.
             File.AppendAllText(path, plantInfo);
+        }
+
+        private static string charLimit(string prompt) {
+            bool underLimit = false;
+            string answer = "";
+            // Enforces a character limit
+            while(underLimit == false) {
+                Console.Write(prompt);
+                answer = Console.ReadLine() ?? "null";
+                if(answer.Length > 30) {
+                    Console.Write("Description exceeds the 30 character limit. ");
+                } else {
+                    underLimit = true;
+                }
+            }
+            return answer;
         }
 
         /* Formats and outputs the user's plant information*/
@@ -119,6 +143,7 @@ namespace PlantInformationProject {
             while(readPlantInfo.GetLength(1) > y) {
                 for(int x = 0; x < readPlantInfo.GetLength(0); x++) {
                     for(; y < maxIndex; y++) {
+
                         Console.Write($"{readPlantInfo[x, y], -60}");
                         // Add a new line when the end of the row is reached in the array.
                         if(maxIndex - 1 == y) {
