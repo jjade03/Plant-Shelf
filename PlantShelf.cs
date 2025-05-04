@@ -22,15 +22,25 @@ namespace PlantInformationProject {
         // Future goal: Rather than have user enter any data they want, have them select from provided options unless stated otherwise
         /* Prompts the user to enter their plant's information */
         private static void userPlantInfo(string path) {
-            // Creates a FileStream object to write to the text file.
-            string plantInfo;
+            string plantInfo;       // Creates a FileStream object to write to the text file.
+            int plantAge = -1;      // Sets the default age as an invalid value.
 
             /* RECEIVES USER INPUT [START] */
             string speciesPrompt = "Enter Plant Species: ";
             string plantSpecies = charLimit(speciesPrompt);
 
-            string agePrompt = "Enter Plant's Age: ";
-            int plantAge = Convert.ToInt32(charLimit(agePrompt));
+            // Checks if the plant's age is a valid input.
+            while(plantAge < 0 || plantAge.ToString().Length > 2) {
+                try {
+                    string agePrompt = "Enter Plant's Age: ";
+                    plantAge = Convert.ToInt32(charLimit(agePrompt));
+                    if(plantAge < 0 || plantAge.ToString().Length > 2) {
+                        Console.WriteLine("Invalid age entered.");
+                    }
+                } catch (Exception e) {
+                    Console.WriteLine(e.Message);
+                }
+            }
 
             string waterPrompt = "Enter Watering Frequency: ";
             string waterFrequency = charLimit(waterPrompt);
@@ -43,40 +53,43 @@ namespace PlantInformationProject {
 
             string checkNamePrompt = "Does your plant have a nickname? (Enter 'yes' or 'no'): ";
             Console.Write(checkNamePrompt);
-            string checkName = Console.ReadLine().ToLower();
+            string checkName = Console.ReadLine() ?? "null".ToLower();
 
+            // Ensures user enters either 'yes' or 'no'.
             while(checkName != "yes" && checkName != "no") {
                 Console.Write("Invalid answer given: '" + checkName+ "'. " + checkNamePrompt);
-                checkName = Console.ReadLine().ToLower();
+                checkName = Console.ReadLine() ?? "null".ToLower();
             }
 
             if(checkName == "yes") {
                 string nicknamePrompt = "Enter Nickname: ";
                 string plantNickname = charLimit(nicknamePrompt);
 
-                // Adds the plant's nickname to the string.
-                plantInfo = plantNickname + ",";
+                plantInfo = plantNickname + ",";        // Adds the plant's nickname to the string.
             } else {
-                plantInfo = null + ",";
+                plantInfo = "null" + ",";               // Adds temporary name to the string.
             }
             /* RECEIVE USER INPUT [END] */
             // Appends user's plant information to the string.
             plantInfo += $"Species:                    {plantSpecies},Age:                        {plantAge},Watering Frequency:         {waterFrequency}," +
             $"Sunlight Requirement:       {sunRequirement},Room Location:              {plantLocation},\n,";
 
-            // Write information to the file, then close it.
-            File.AppendAllText(path, plantInfo);
+            File.AppendAllText(path, plantInfo);        // Writes information to the file, then closes it.
         }
 
+        /* Checks if the input is within the character limit */
         private static string charLimit(string prompt) {
             bool underLimit = false;
             string answer = "";
-            // Enforces a character limit
-            while(underLimit == false) {
+            // Enforces a character limit and checks if the input is null.
+            while(underLimit == false || answer == "null") {
                 Console.Write(prompt);
                 answer = Console.ReadLine() ?? "null";
                 if(answer.Length > 30) {
-                    Console.Write("Description exceeds the 30 character limit. ");
+                    Console.WriteLine("Description exceeds the 30 character limit.");
+                    underLimit = false;
+                } else if(answer.Length == 0 || answer == "null") {
+                    Console.WriteLine("Invalid input entered.");
                 } else {
                     underLimit = true;
                 }
