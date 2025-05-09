@@ -15,11 +15,10 @@ namespace PlantInformationProject {
             "\n\nEnter the number corresponding with your selection: ");
             int option = Convert.ToInt32(Console.ReadLine());*/
             
-            userPlantInfo(path);
-            //outputPlantInfo(path);
+            //userPlantInfo(path);
+            outputPlantInfo(path);
         }
 
-        // Future goal: Rather than have user enter any data they want, have them select from provided options unless stated otherwise
         /* Prompts the user to enter their plant's information */
         private static void userPlantInfo(string path) {
             string plantInfo;       // Creates a FileStream object to write to the text file.
@@ -113,12 +112,18 @@ namespace PlantInformationProject {
             int countElem = 0;                                             // Holds the current actual element position.
             int countCols = 0;                                      
             string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
-            //int maxCols = readPlantInfo.GetLength(1);                    // Holds the max number of columns in the array.  
-
 
             // Increments through each element in the array, making the first character of each element uppercase.
-            // Incremements through each element in the array.
             for(int i = 0; i < dividedInfo.Length; i++) {
+                // If the nickname is null, add the species name instead.
+                if(dividedInfo[i] == "null") {
+                    dividedInfo[i] = "";    // Empties the current index in the array.
+                    // Receives the species name from the fixed position.
+                    for(int newIndex = 28; newIndex < dividedInfo[i + 1].Length; newIndex++) {
+                        dividedInfo[i] += dividedInfo[i + 1][newIndex];
+                    }
+                }
+
                 // Increments through each character of the current element in the array.
                 for(int k = 0; k < dividedInfo[i].Length; k++) {
                     if(k == 0 || spaceCheck == true) {
@@ -146,17 +151,20 @@ namespace PlantInformationProject {
             }
 
             int evenRows = readPlantInfo.GetLength(1)/2;    // Defines the amount of full rows.
-            int y = 0;                  // Initializes the starting index.
-            int startIndex = 0;         // Saves the starting position for 'y'.
-            int perRow = 2;             // Defines the max number of columns.
-            int maxIndex = perRow;      // Defines the max index to be printed on a single row in the console.
-            int countRows = 0;          // Holds the number of rows printed to the console.
+            int y = 0;                                      // Initializes the starting index.
+            int startIndex = 0;                             // Saves the starting position for 'y'.
+            int perRow = 2;                                 // Defines the max number of columns.
+            int maxIndex = perRow;                          // Defines the max index to be printed on a single row in the console.
+            int countRows = 0;                              // Holds the number of rows printed to the console.
+
+            if(readPlantInfo.GetLength(1) == 1) {
+                maxIndex = readPlantInfo.GetLength(1);      // Reinitializes 'maxIndex' if the length of dimension 1 in the array is '1'.
+            }
 
             // Increments through the array, outputting two columns per row in the console.
             while(readPlantInfo.GetLength(1) > y) {
                 for(int x = 0; x < readPlantInfo.GetLength(0); x++) {
                     for(; y < maxIndex; y++) {
-
                         Console.Write($"{readPlantInfo[x, y], -60}");
                         // Add a new line when the end of the row is reached in the array.
                         if(maxIndex - 1 == y) {
