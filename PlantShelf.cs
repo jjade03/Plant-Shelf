@@ -11,12 +11,24 @@ namespace PlantInformationProject {
             if(!File.Exists(path)) {
                 File.Create(path).Close();
             }
-            /*Console.Write("Welcome to your plant shelf! What would you like to do?\n1. View Plants\n2. Add New Plant\n3. View Infirmary\n4. View Graveyard" +
+
+            Console.Write("Welcome to your plant shelf! What would you like to do?\n1. View Plants\n2. Add New Plant" +
             "\n\nEnter the number corresponding with your selection: ");
-            int option = Convert.ToInt32(Console.ReadLine());*/
+            int option = Convert.ToInt32(Console.ReadLine());
             
-            //userPlantInfo(path);
-            outputPlantInfo(path);
+            switch(option) {
+                case 1: 
+                    long fileLength = new FileInfo(path).Length;
+                    if(fileLength == 0) {
+                        Console.WriteLine("\nNo plants currently exist.\n");
+                    } else {
+                        outputPlantInfo(path);
+                    }
+                    break;
+                case 2: 
+                    userPlantInfo(path);
+                    break;
+            }
         }
 
         /* Prompts the user to enter their plant's information */
@@ -24,7 +36,7 @@ namespace PlantInformationProject {
             string plantInfo;       // Creates a FileStream object to write to the text file.
             int plantAge = -1;      // Sets the default age as an invalid value.
 
-            /* RECEIVES USER INPUT [START] */
+            /* RECEIVES PLANT INFORMATION [START] */
             string speciesPrompt = "Enter Plant Species: ";
             string plantSpecies = charLimit(speciesPrompt);
 
@@ -52,13 +64,8 @@ namespace PlantInformationProject {
 
             string checkNamePrompt = "Does your plant have a nickname? (Enter 'yes' or 'no'): ";
             Console.Write(checkNamePrompt);
-            string checkName = Console.ReadLine() ?? "null".ToLower();
-
-            // Ensures user enters either 'yes' or 'no'.
-            while(checkName != "yes" && checkName != "no") {
-                Console.Write("Invalid answer given: '" + checkName+ "'. " + checkNamePrompt);
-                checkName = Console.ReadLine() ?? "null".ToLower();
-            }
+            string checkName = Console.ReadLine().ToLower();
+            checkName = YNCheck(checkName, checkNamePrompt);
 
             if(checkName == "yes") {
                 string nicknamePrompt = "Enter Nickname: ";
@@ -68,14 +75,45 @@ namespace PlantInformationProject {
             } else {
                 plantInfo = "null" + ",";               // Adds temporary name to the string.
             }
-            /* RECEIVE USER INPUT [END] */
+            /* RECEIVES PLANT INFORMATION [END] */
             // Appends user's plant information to the string.
             plantInfo += $"Species:                    {plantSpecies},Age:                        {plantAge},Watering Frequency:         {waterFrequency}," +
             $"Sunlight Requirement:       {sunRequirement},Room Location:              {plantLocation},\n,";
+            
+            string[] checkInfo = plantInfo.Split(",", StringSplitOptions.RemoveEmptyEntries);   // Splits the string.
+            string[] formatInfo = new string[checkInfo.Length];                                 // Holds the contents of the file with uppercases.
 
-            File.AppendAllText(path, plantInfo);        // Writes information to the file, then closes it.
+            FormatOutput(checkInfo, formatInfo);
+
+            // Prints the formatted information.
+            Console.WriteLine();
+            foreach(string element in formatInfo) {
+                Console.WriteLine(element);
+            }
+
+            // Checks if the information entered is correct and writes it to the file.
+            string plantInfoPrompt = "Is the plant's information correct? (Enter 'yes' or 'no'): ";
+            Console.Write(plantInfoPrompt);
+            string confirm = Console.ReadLine().ToLower();
+            confirm = YNCheck(confirm, plantInfoPrompt);
+
+            if(confirm == "yes") {
+                File.AppendAllText(path, plantInfo);        // Writes information to the file, then closes it.
+                Console.WriteLine("Information Saved!");
+            } else {
+                userPlantInfo(path);
+            }
         }
 
+        /* Ensures user enters either 'yes' or 'no'. */
+        private static string YNCheck(string check, string checkPrompt) {
+            while(check != "yes" && check != "no") {
+                Console.Write("Invalid answer given: '" + check + "'. " + checkPrompt);
+                check = Console.ReadLine().ToLower();
+            }
+            return check;
+        }
+        
         /* Checks if the input is within the character limit */
         private static string charLimit(string prompt) {
             bool underLimit = false;
@@ -101,11 +139,9 @@ namespace PlantInformationProject {
         private static void outputPlantInfo(string path) {
             // Divides the file based on the parameters provided in 'separators'.
             string fileContent = File.ReadAllText(path);
-            char[] separators = {','};
-            string[] dividedInfo = fileContent.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            string[] dividedInfo = fileContent.Split(",", StringSplitOptions.RemoveEmptyEntries);
 
             string[] formatInfo = new string[dividedInfo.Length];          // Holds the contents of the file with uppercases.
-            bool spaceCheck = false;                                       // Checks if the current character is a space.
 
             int numElements = 6;                                           // Max number of variables entered into file on each line.
             int fileRows = File.ReadLines(path).Count() - 1;               // Gets the numbers of lines in the file.
@@ -114,31 +150,7 @@ namespace PlantInformationProject {
             string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
 
             // Increments through each element in the array, making the first character of each element uppercase.
-            for(int i = 0; i < dividedInfo.Length; i++) {
-                // If the nickname is null, add the species name instead.
-                if(dividedInfo[i] == "null") {
-                    dividedInfo[i] = "";    // Empties the current index in the array.
-                    // Receives the species name from the fixed position.
-                    for(int newIndex = 28; newIndex < dividedInfo[i + 1].Length; newIndex++) {
-                        dividedInfo[i] += dividedInfo[i + 1][newIndex];
-                    }
-                }
-
-                // Increments through each character of the current element in the array.
-                for(int k = 0; k < dividedInfo[i].Length; k++) {
-                    if(k == 0 || spaceCheck == true) {
-                        // Converts the first letter of each element to be uppercase.
-                        formatInfo[i] += char.ToUpper(dividedInfo[i][k]);
-                        spaceCheck = false;
-                    } else {
-                        formatInfo[i] += dividedInfo[i][k];
-                    }
-                    // Checks if the current position is whitespace and saves the answer as a bool.
-                    if(char.IsWhiteSpace(dividedInfo[i][k])) {
-                        spaceCheck = true;
-                    }
-                }
-            }
+            FormatOutput(dividedInfo, formatInfo);
 
             // Increments through the array by 8 so that matching variables are inputted into the new array on the same row.
             for(int i = 0; i < numElements; i++) {
@@ -179,6 +191,36 @@ namespace PlantInformationProject {
                 startIndex = y;         // Reinitializes the starting position of 'y'.
                 countRows++;
                 maxIndex = (countRows == evenRows) ? maxIndex += 1: maxIndex += perRow;
+            }
+        }
+
+        private static void FormatOutput(string[] dividedInfo, string[] formatInfo) {
+            bool spaceCheck = false;                                       // Checks if the current character is a space.
+
+            for(int i = 0; i < dividedInfo.Length; i++) {
+                // If the nickname is null, add the species name instead.
+                if(dividedInfo[i] == "null") {
+                    dividedInfo[i] = "";    // Empties the current index in the array.
+                    // Receives the species name from the fixed position.
+                    for(int newIndex = 28; newIndex < dividedInfo[i + 1].Length; newIndex++) {
+                        dividedInfo[i] += dividedInfo[i + 1][newIndex];
+                    }
+                }
+
+                // Increments through each character of the current element in the array.
+                for(int k = 0; k < dividedInfo[i].Length; k++) {
+                    if(k == 0 || spaceCheck == true) {
+                        // Converts the first letter of each element to be uppercase.
+                        formatInfo[i] += char.ToUpper(dividedInfo[i][k]);
+                        spaceCheck = false;
+                    } else {
+                        formatInfo[i] += dividedInfo[i][k];
+                    }
+                    // Checks if the current position is whitespace and saves the answer as a bool.
+                    if(char.IsWhiteSpace(dividedInfo[i][k])) {
+                        spaceCheck = true;
+                    }
+                }
             }
         }
 
