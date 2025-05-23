@@ -1,26 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks.Dataflow;
+namespace PlantInfo
+{
+    class PlantShelf
+    {
+        /* Loops through the menu, calling the appropriate methods corresponding with the user's choice */
+        public void menuLoop(int option, string path, string welcomeMsg)
+        {
+            bool userContinue = true;   // Defines the loop as true.
 
-namespace PlantInformationProject {
-    class PlantShelf {
-        static void Main(string[] args) {
-            bool userContinue = true;
-            int option = -1;        // Initializes 'option' as an invalid number.
-            string welcomeMsg = "What would you like to do?\n1. View Plants\n2. Add New Plant\n3. Exit" +
-            "\n\nEnter the number corresponding with your selection: ";
-
-            string path = @"PlantList.txt";
-
-            // Creates a path and checks if the file already exists. If it doesn't, creates the file and closes it.
-            if(!File.Exists(path)) {
-                File.Create(path).Close();
-            }
-
-            Console.Write("Welcome to your plant shelf!" + welcomeMsg);
-            option = validOptCheck(option);
-
+            // Loops through the menu until the user decides to exit.
             while (userContinue)
             {
                 switch (option)
@@ -55,7 +42,7 @@ namespace PlantInformationProject {
         }
 
         /* Prompts the user to enter their plant's information */
-        private static void userPlantInfo(string path)
+        public void userPlantInfo(string path)
         {
             string plantInfo;       // Creates a FileStream object to write to the text file.
             int plantAge = -1;      // Sets the default age as an invalid value.
@@ -142,8 +129,10 @@ namespace PlantInformationProject {
         }
 
         /* Ensures user enters either 'yes' or 'no' and returns the answer */
-        private static string YNCheck(string check, string checkPrompt) {
-            while(check != "yes" && check != "no") {
+        private static string YNCheck(string check, string checkPrompt)
+        {
+            while (check != "yes" && check != "no")
+            {
                 Console.Write("Invalid answer given: '" + check + "'. " + checkPrompt);
                 check = Console.ReadLine().ToLower();
             }
@@ -171,7 +160,7 @@ namespace PlantInformationProject {
         }
 
         /* Ensures user enters a valid option and returns the value */
-        private static int validOptCheck(int option)
+        public int validOptCheck(int option)
         {
             string optionPrompt = " Enter a valid option (1-3): ";
             // Ensures user enters a valid option.
@@ -194,7 +183,7 @@ namespace PlantInformationProject {
         }
 
         /* Formats and outputs the user's plant information */
-        private static void outputPlantInfo(string path)
+        public void outputPlantInfo(string path)
         {
             /* Formatting variables */
             // Divides the file based on the parameters provided in 'separators'.
