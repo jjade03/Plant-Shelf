@@ -115,7 +115,7 @@ class AddPlants
     }
     
     /* Ensures user enters either 'yes' or 'no' and returns the answer */
-    private static string YNCheck(string check, string checkPrompt)
+    public string YNCheck(string check, string checkPrompt)
     {
         while (check != "yes" && check != "no")
         {

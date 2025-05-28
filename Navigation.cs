@@ -1,16 +1,16 @@
-class PlantShelf
+class Navigation
 {
     /* Ensures user enters a valid option and returns the value */
-    public int ValidOptCheck(int option)
+    public int ValidOptCheck(int option, int lowVal, int highVal, int subVal)
     {
-        string optionPrompt = " Enter a valid option (1-3): ";
+        string optionPrompt = " Enter a valid option (" + (lowVal + 1) + "-" + (highVal + 1) + ") : ";
         // Ensures user enters a valid option.
-        while (option <= 0 || option > 3)
+        while (option < lowVal || option > highVal)
         {
             try
             {
-                option = Convert.ToInt32(Console.ReadLine());
-                if (option <= 0 || option > 3)
+                option = Convert.ToInt32(Console.ReadLine()) - subVal;
+                if (option <= lowVal || option > highVal)
                 {
                     Console.Write(">> Invalid option entered." + optionPrompt);
                 }
@@ -27,8 +27,10 @@ class PlantShelf
     public void MenuLoop(int option, string path, string welcomeMsg)
     {
         bool userContinue = true;   // Defines the loop as true.
+        // Creates objects of the referenced classes.
         ViewPlants viewObj = new();
         AddPlants addObj = new();
+        EditPlants editObj = new();
 
         // Loops through the menu until the user decides to exit.
         while (userContinue)
@@ -43,13 +45,21 @@ class PlantShelf
                     }
                     else
                     {
-                        viewObj.OutputPlantInfo(path);
+                        viewObj.OutputPlantInfo(path, false);
                     }
                     break;
                 case 2:
                     addObj.UserPlantInfo(path, viewObj);
                     break;
                 case 3:
+                    viewObj.OutputPlantInfo(path, true);
+                    Console.Write("> Enter the plant's index that you wish to edit: ");
+                    //int plantIndex = Convert.ToInt32(Console.ReadLine()) - 1;   // Obtains user input -1 to get the true index.
+
+                    int plantIndex = ValidOptCheck(-1, 0, 5, 1);       // TEMP VALUES-- Ensures the user entered a valid option.
+                    editObj.EditPlantInfo(path, plantIndex, viewObj);
+                    break;
+                case 4:
                     Console.WriteLine("\n>> Exiting your plant shelf...\n\n\n>> Bye!\n");
                     userContinue = false;
                     break;
@@ -59,7 +69,7 @@ class PlantShelf
             {
                 option = -1;    // Reinitializes option as an invalid number.
                 Console.Write(welcomeMsg);
-                option = ValidOptCheck(option);
+                option = ValidOptCheck(option, 0, 4, 0);
             }
         }
     }

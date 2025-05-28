@@ -1,7 +1,7 @@
 class ViewPlants
 {
     /* Formats and outputs the user's plant information */
-    public void OutputPlantInfo(string path)
+    public void OutputPlantInfo(string path, bool numCheck)
     {
         /* Formatting variables */
         // Divides the file based on the parameters provided in 'separators'.
@@ -15,8 +15,8 @@ class ViewPlants
         string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
 
         /* Output Variables */
-        int perRow = Console.WindowWidth / 80;                           // Defines the max number of columns relative to the console's width.
-        int evenRows = readPlantInfo.GetLength(1) / 2;                   // Defines the amount of full rows.
+        int perRow = Console.WindowWidth / 80;                         // Defines the max number of columns relative to the console's width.
+        int evenRows = readPlantInfo.GetLength(1) / 2;                 // Defines the amount of full rows.
         int y = 0;                                                     // Initializes the starting index.
         int startIndex = 0;                                            // Saves the starting position for 'y'.
         int maxIndex = perRow;                                         // Defines the max index to be printed on a single row in the console.
@@ -50,7 +50,16 @@ class ViewPlants
             {
                 for (; y < maxIndex; y++)
                 {
-                    Console.Write($"{readPlantInfo[x, y],-60}");
+                    // Inserts number before each block of data with the proper indentation.
+                    if (numCheck == true && x == 0)
+                    {
+                        Console.Write($"{y + 1}. ");
+                        Console.Write($"{readPlantInfo[x, y], -57}");
+                    }
+                    else
+                    {
+                        Console.Write($"{readPlantInfo[x, y], -60}");
+                    }
                     // Add a new line when the end of the row is reached in the array.
                     if (maxIndex - 1 == y)
                     {
@@ -71,9 +80,9 @@ class ViewPlants
     /* Formats and returns a given string array */
     public string[] FormatOutput(string[] toFormat)
     {
-        string[] formatInfo = new string[toFormat.Length];          // Holds the contents of the file with uppercases.
+        string[] formatInfo = new string[toFormat.Length];  // Holds the contents of the file with uppercases.
 
-        bool spaceCheck = false;    // Checks if the current character is a space.
+        bool spaceCheck = false;                            // Checks if the current character is a space.
 
         for (int i = 0; i < toFormat.Length; i++)
         {
