@@ -1,5 +1,10 @@
+using System.Security.Authentication.ExtendedProtection;
+
 class AddPlants
 {
+    public string[] msgPrompt = {"","Species:                    ", "Age:                        ", "Watering Frequency:         ",
+         "Sunlight Requirement:       ", "Room Location:              "};
+
     /* Prompts the user to enter their plant's information */
     public void UserPlantInfo(string path, ViewPlants viewObj)
     {
@@ -8,7 +13,7 @@ class AddPlants
 
         /* RECEIVES PLANT INFORMATION [START] */
         string speciesPrompt = "\n> Enter Plant Species: ";
-        string plantSpecies = CharLimit(speciesPrompt);
+        string plantSpecies = CharLimit(speciesPrompt, false);
 
         // Checks if the plant's age is a valid input.
         while (plantAge < 0 || plantAge.ToString().Length > 2)
@@ -16,7 +21,7 @@ class AddPlants
             try
             {
                 string agePrompt = "> Enter Plant's Age: ";
-                plantAge = Convert.ToInt32(CharLimit(agePrompt));
+                plantAge = Convert.ToInt32(CharLimit(agePrompt, false));
                 if (plantAge < 0 || plantAge.ToString().Length > 2)
                 {
                     Console.WriteLine(">> Invalid age entered.");
@@ -29,13 +34,13 @@ class AddPlants
         }
 
         string waterPrompt = "> Enter Watering Frequency: ";
-        string waterFrequency = CharLimit(waterPrompt);
+        string waterFrequency = CharLimit(waterPrompt, false);
 
         string sunPrompt = "> Enter Sunlight Requirement: ";
-        string sunRequirement = CharLimit(sunPrompt);
+        string sunRequirement = CharLimit(sunPrompt, false);
 
         string locationPrompt = "> Enter Plant's Location in Room: ";
-        string plantLocation = CharLimit(locationPrompt);
+        string plantLocation = CharLimit(locationPrompt, false);
 
         string checkNamePrompt = "> Does your plant have a nickname? (Enter 'yes' or 'no'): ";
         Console.Write(checkNamePrompt);
@@ -45,7 +50,7 @@ class AddPlants
         if (checkName == "yes")
         {
             string nicknamePrompt = "> Enter Nickname: ";
-            string plantNickname = CharLimit(nicknamePrompt);
+            string plantNickname = CharLimit(nicknamePrompt, false);
 
             plantInfo = plantNickname + ",";        // Adds the plant's nickname to the string.
         }
@@ -55,11 +60,10 @@ class AddPlants
         }
         /* RECEIVES PLANT INFORMATION [END] */
         // Appends user's plant information to the string.
-        plantInfo += $"Species:                    {plantSpecies},Age:                        {plantAge},Watering Frequency:         {waterFrequency}," +
-        $"Sunlight Requirement:       {sunRequirement},Room Location:              {plantLocation},\n,";
+        plantInfo += $"{msgPrompt[1]}{plantSpecies},{msgPrompt[2]}{plantAge},{msgPrompt[3]}{waterFrequency},{msgPrompt[4]}{sunRequirement}," +
+        $"{msgPrompt[5]}{plantLocation},\n,";
 
         string[] checkInfo = plantInfo.Split(",", StringSplitOptions.RemoveEmptyEntries);   // Splits the string.
-        //string[] formatInfo = new string[checkInfo.Length];                                 // Holds the contents of the file with uppercases.
 
         string[] formatInfo = viewObj.FormatOutput(checkInfo);
 
@@ -88,7 +92,7 @@ class AddPlants
     }
 
     /* Checks if the input is within the character limit and returns the value */
-    private static string CharLimit(string prompt)
+    public string CharLimit(string prompt, bool skip)
     {
         bool underLimit = false;
         string answer = "";
@@ -102,7 +106,7 @@ class AddPlants
                 Console.WriteLine(">> Description exceeds the 30 character limit.");
                 underLimit = false;
             }
-            else if (answer.Length == 0 || answer == "null")
+            else if ((answer.Length == 0 || answer == "null") && skip == false)
             {
                 Console.WriteLine(">> Invalid input entered.");
             }

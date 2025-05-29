@@ -1,15 +1,15 @@
 class Navigation
 {
     /* Ensures user enters a valid option and returns the value */
-    public int ValidOptCheck(int option, int lowVal, int highVal, int subVal)
+    public int ValidOptCheck(int option, int lowVal, int highVal, int holdVal)
     {
-        string optionPrompt = " Enter a valid option (" + (lowVal + 1) + "-" + (highVal + 1) + ") : ";
+        string optionPrompt = " Enter a valid option (" + (lowVal + 1) + "-" + (highVal + holdVal) + ") : ";
         // Ensures user enters a valid option.
         while (option < lowVal || option > highVal)
         {
             try
             {
-                option = Convert.ToInt32(Console.ReadLine()) - subVal;
+                option = Convert.ToInt32(Console.ReadLine()) - holdVal;
                 if (option <= lowVal || option > highVal)
                 {
                     Console.Write(">> Invalid option entered." + optionPrompt);
