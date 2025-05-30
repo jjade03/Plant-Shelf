@@ -10,7 +10,7 @@ class Navigation
             try
             {
                 option = Convert.ToInt32(Console.ReadLine()) - holdVal;
-                if (option <= lowVal || option > highVal)
+                if (option < lowVal || option > highVal)
                 {
                     Console.Write(">> Invalid option entered." + optionPrompt);
                 }
@@ -54,8 +54,6 @@ class Navigation
                 case 3:
                     viewObj.OutputPlantInfo(path, true);
                     Console.Write("> Enter the plant's index that you wish to edit: ");
-                    //int plantIndex = Convert.ToInt32(Console.ReadLine()) - 1;   // Obtains user input -1 to get the true index.
-
                     int plantIndex = ValidOptCheck(-1, 0, 5, 1);       // TEMP VALUES-- Ensures the user entered a valid option.
                     editObj.EditPlantInfo(path, plantIndex, viewObj);
                     break;
