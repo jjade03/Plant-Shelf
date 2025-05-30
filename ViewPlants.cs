@@ -10,34 +10,16 @@ class ViewPlants
 
         int numElements = 6;                                           // Max number of variables entered into file on each line.
         int fileRows = File.ReadLines(path).Count() - 1;               // Gets the numbers of lines in the file.
-                                                                       //        int countElem = 0;                                             // Holds the current actual element position.
-                                                                       //       int countCols = 0;
         string[,] readPlantInfo = new string[numElements, fileRows];   // Formatted version of the file contents.
 
         /* Output Variables */
         int perRow = Console.WindowWidth / 80;                         // Defines the max number of columns relative to the console's width.
         int maxIndex = perRow;                                         // Defines the max index to be printed on a single row in the console.
-        /*        int evenRows = readPlantInfo.GetLength(1) / 2;                 // Defines the amount of full rows.
-                        int y = 0;                                                     // Initializes the starting index.
-                        int startIndex = 0;                                            // Saves the starting position for 'y'.
-                        int maxIndex = perRow;                                         // Defines the max index to be printed on a single row in the console.
-                        int countRows = 0;*/                                             // Holds the number of rows printed to the console.
 
         // Increments through each element in the array, making the first character of each element uppercase.
         string[] formatInfo = FormatOutput(dividedInfo);
 
         readPlantInfo = ReindexArray(readPlantInfo, numElements, formatInfo, 7);
-        // Increments through the array by 8 so that matching variables are inputted into the new array on the same row.
-        /*for (int i = 0; i < numElements; i++)
-        {
-            for (int k = countElem; k < formatInfo.Length; k += 7)
-            {
-                readPlantInfo[countElem, countCols] = formatInfo[k];
-                countCols++;
-            }
-            countElem++;
-            countCols = 0;
-        }*/
 
         // Reinitializes 'maxIndex' if the length of dimension 1 in the array is less than the number of indexes set to print per row.
         if (readPlantInfo.GetLength(1) < perRow)
@@ -111,10 +93,10 @@ class ViewPlants
 
     public void OutputPerRow(int maxIndex, string[,] multiArray, int perRow, bool numCheck)
     {
-        int evenRows = multiArray.GetLength(1) / 2;                 // Defines the amount of full rows.
-        int y = 0;                                                     // Initializes the starting index.
-        int startIndex = 0;                                            // Saves the starting position for 'y'.
-        int countRows = 0;                                             // Holds the number of rows printed to the console.
+        int evenRows = multiArray.GetLength(1) / 2;     // Defines the amount of full rows.
+        int y = 0;                                      // Initializes the starting index.
+        int startIndex = 0;                             // Saves the starting position for 'y'.
+        int countRows = 0;                              // Holds the number of rows printed to the console.
 
         // Increments through the array, outputting two columns per row in the console.
         while (multiArray.GetLength(1) > y)

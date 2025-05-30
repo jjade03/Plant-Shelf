@@ -113,33 +113,36 @@ class EditPlants
     {
         string line = null;     // Holds the contents of the current line.
         int currentLine = -1;
+        int fileLength = File.ReadAllLines(path).Length - 1;
 
         // Reads the contents from the file.
         using (StreamReader reader = new StreamReader(path))
         {
-            using (StreamWriter writer = new StreamWriter("EditedPlantList.txt"))
+            using StreamWriter writer = new StreamWriter("EditedPlantList.txt");
+            // Removes the appropriate line from the file.
+            while ((line = reader.ReadLine()) != null)
             {
-                // Removes the appropriate line from the file.
-                while ((line = reader.ReadLine()) != null)
+                currentLine++;
+                if (currentLine != plantIndex && currentLine != fileLength)
                 {
-                    currentLine++;
-                    if (currentLine != plantIndex)
+                    writer.WriteLine(line);
+                }
+                else if (currentLine != plantIndex && currentLine == fileLength)
+                {
+                    writer.Write(",");
+                }
+                else
+                {
+
+                    for (int row = 1; row <= printPlantInfo.GetLength(1) - 1; row++)
                     {
-                        writer.WriteLine(line);
-                    }
-                    else
-                    {
-                        
-                        for (int row = 1; row <= printPlantInfo.GetLength(1) - 1; row++)
+                        Console.WriteLine("\nRewriting file...");
+                        writer.Write(",");
+                        for (int cols = 0; cols < printPlantInfo.GetLength(0); cols++)
                         {
-                            Console.WriteLine("\nRewriting file...");
-                            writer.Write(",");
-                            for (int cols = 0; cols < printPlantInfo.GetLength(0); cols++)
-                            {
-                                writer.Write(printPlantInfo[cols, row] + ",");
-                            }
-                            writer.Write("\n");
+                            writer.Write(printPlantInfo[cols, row] + ",");
                         }
+                        writer.Write("\n");
                     }
                 }
             }
