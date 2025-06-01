@@ -5,6 +5,7 @@ Additional goals of this project are to expand my knowledge on C# and keep my sk
 
 ### 🌿 Current Features:
 -> Adding new plants to your gallery.
+
 -> Viewing all saved plants.
 
 -> Editing a specific plant from your gallery.
