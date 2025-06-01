@@ -44,7 +44,7 @@ class AddPlants
 
         string checkNamePrompt = "> Does your plant have a nickname? (Enter 'yes' or 'no'): ";
         Console.Write(checkNamePrompt);
-        string checkName = Console.ReadLine().ToLower();
+        string checkName = (Console.ReadLine() ?? "null").ToLower();
         checkName = YNCheck(checkName, checkNamePrompt);
 
         if (checkName == "yes")
@@ -77,7 +77,7 @@ class AddPlants
         // Checks if the information entered is correct and writes it to the file.
         string plantInfoPrompt = "> Is the plant's information correct? (Enter 'yes' or 'no'): ";
         Console.Write(plantInfoPrompt);
-        string confirm = Console.ReadLine().ToLower();
+        string confirm = (Console.ReadLine() ?? "null").ToLower();
         confirm = YNCheck(confirm, plantInfoPrompt);
 
         if (confirm == "yes")
@@ -124,7 +124,7 @@ class AddPlants
         while (check != "yes" && check != "no")
         {
             Console.Write(">> Invalid answer given: '" + check + "'.\n" + checkPrompt);
-            check = Console.ReadLine().ToLower();
+            check = (Console.ReadLine() ?? "null").ToLower();
         }
         return check;
     }

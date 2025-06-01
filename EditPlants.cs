@@ -27,7 +27,7 @@ class EditPlants
             Console.WriteLine(element);
         }
         Console.Write(confirmMsg);
-        string confirm = Console.ReadLine().ToLower();
+        string confirm = (Console.ReadLine() ?? "null").ToLower();
         confirm = addObj.YNCheck(confirm, confirmMsg);      // Ensures valid answer is entered.
 
         // If the information is incorrect, repeat the loop.
@@ -42,7 +42,7 @@ class EditPlants
             printPlantInfo = ReenterInfo(plantInfo, printPlantInfo);
 
             Console.Write("\nIs this information correct?\n" + confirmMsg);
-            newConfirm = Console.ReadLine().ToLower();
+            newConfirm = (Console.ReadLine() ?? "null").ToLower();
             newConfirm = addObj.YNCheck(newConfirm, confirmMsg);      // Ensures valid answer is entered.
 
             if (newConfirm != "yes")
@@ -101,6 +101,7 @@ class EditPlants
         // Reformats the information and adds it into a 2D array for clarity.
         newPlantInfo = viewObj.FormatOutput(newPlantInfo);
         printPlantInfo = viewObj.ReindexArray(printPlantInfo, plantInfo.Length, newPlantInfo, plantInfo.Length);
+
         // Prints a side-by-side comparison.
         Console.WriteLine($"\n{"OLD:",20}{"-->",30}{"NEW:",30}\n");
         viewObj.OutputPerRow(2, printPlantInfo, 2, false);
@@ -111,14 +112,14 @@ class EditPlants
     /* Removes the old information and inserts the new information in it's place */
     private static void EditLine(string path, int plantIndex, string[,] printPlantInfo)
     {
-        string line = null;     // Holds the contents of the current line.
+        string? line = null;     // Holds the contents of the current line.
         int currentLine = -1;
         int fileLength = File.ReadAllLines(path).Length - 1;
 
         // Reads the contents from the file.
-        using (StreamReader reader = new StreamReader(path))
+        using (StreamReader reader = new(path))
         {
-            using StreamWriter writer = new StreamWriter("EditedPlantList.txt");
+            using StreamWriter writer = new("EditedPlantList.txt");
             // Removes the appropriate line from the file.
             while ((line = reader.ReadLine()) != null)
             {

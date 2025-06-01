@@ -3,14 +3,14 @@ class Navigation
     /* Ensures user enters a valid option and returns the value */
     public int ValidOptCheck(int option, int lowVal, int highVal, int holdVal)
     {
-        string optionPrompt = " Enter a valid option (" + (lowVal + 1) + "-" + (highVal + holdVal) + ") : ";
+        string optionPrompt = " Enter a valid option (" + (lowVal + 1 + holdVal) + "-" + highVal + ") : ";
         // Ensures user enters a valid option.
-        while (option < lowVal || option > highVal)
+        while (option <= lowVal || option > highVal - holdVal)
         {
             try
             {
                 option = Convert.ToInt32(Console.ReadLine()) - holdVal;
-                if (option < lowVal || option > highVal)
+                if (option <= lowVal || option > highVal - holdVal)
                 {
                     Console.Write(">> Invalid option entered." + optionPrompt);
                 }
@@ -19,6 +19,7 @@ class Navigation
             {
                 Console.Write(">> " + e.Message + optionPrompt);
             }
+            Console.WriteLine($"opt: {option}, lowval: {lowVal}");
         }
         return option;
     }
@@ -27,6 +28,8 @@ class Navigation
     public void MenuLoop(int option, string path, string welcomeMsg)
     {
         bool userContinue = true;   // Defines the loop as true.
+        int numLines = File.ReadAllLines(path).Length - 1;
+        Console.WriteLine(numLines);
         // Creates objects of the referenced classes.
         ViewPlants viewObj = new();
         AddPlants addObj = new();
@@ -54,7 +57,7 @@ class Navigation
                 case 3:
                     viewObj.OutputPlantInfo(path, true);
                     Console.Write("> Enter the plant's index that you wish to edit: ");
-                    int plantIndex = ValidOptCheck(-1, 0, 5, 1);       // TEMP VALUES-- Ensures the user entered a valid option.
+                    int plantIndex = ValidOptCheck(-1, -1, numLines, 1);       // TEMP VALUES-- Ensures the user entered a valid option.
                     editObj.EditPlantInfo(path, plantIndex, viewObj);
                     break;
                 case 4:
