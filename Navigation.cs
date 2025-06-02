@@ -1,5 +1,35 @@
 class Navigation
 {
+    // Creates objects for the referenced classes.
+    private static readonly ViewPlants viewObj = new();
+    private static readonly AddPlants addObj = new();
+    private static readonly EditPlants editObj = new();
+    private static readonly PlantInfirmary infirmObj = new();
+
+    public void WelcomeMenu(string path, string welcomeMsg, string navMsg, int numOfOpts, bool infirmCheck)
+    {
+        int option = -1;    // Initializes 'option' as an invalid number.
+
+        // Checks if the file already exists. If it doesn't, creates the file and closes it.
+        if (!File.Exists(path))
+        {
+            File.Create(path).Close();
+        }
+
+        Console.Write(welcomeMsg + navMsg);                 // Prints a welcome message for the user, prompting them for input.
+        option = ValidOptCheck(option, 0, numOfOpts, 0);    // Redefines the option as the user's input.
+
+        // Navigates to the appropriate menu.
+        if (infirmCheck == false)
+        {
+            MenuLoop(option, path, navMsg, numOfOpts);
+        }
+        else
+        {
+            infirmObj.InfirmaryMenu(option, navMsg);
+        }
+    }
+
     /* Ensures user enters a valid option and returns the value */
     public int ValidOptCheck(int option, int lowVal, int highVal, int holdVal)
     {
@@ -24,13 +54,9 @@ class Navigation
     }
 
     /* Loops through the menu, calling the appropriate methods corresponding with the user's choice */
-    public void MenuLoop(int option, string path, string welcomeMsg, int numOfOpts)
+    public void MenuLoop(int option, string path, string navMsg, int numOfOpts)
     {
-        bool userContinue = true;                               // Defines the loop as true.
-        // Creates objects of the referenced classes.
-        ViewPlants viewObj = new();
-        AddPlants addObj = new();
-        EditPlants editObj = new();
+        bool userContinue = true;   // Defines the loop as true.
 
         // Loops through the menu until the user decides to exit.
         while (userContinue)
@@ -49,7 +75,7 @@ class Navigation
                     }
                     break;
                 case 2:
-                    addObj.UserPlantInfo(path, viewObj);
+                    addObj.UserPlantInfo(path);
                     break;
                 case 3:
                     int numLines = File.ReadAllLines(path).Length - 1;      // Holds the amount of lines in the file.
@@ -66,6 +92,15 @@ class Navigation
                     editObj.EditPlantInfo(path, plantIndex, numOfOpts, true);
                     break;
                 case 5:
+                    string infirmPath = "InfirmaryLog.txt";
+                    string infirmWelcome = "\nWelcome to your infimary. ";
+                    string infirmMsg = "What would you like to do?\n1. View Sick Plants\n2. Log Sick Plant\n3. Add Health Notes\n4. Leave Infirmary" +
+                            "\n\n> Enter the number corresponding with your selection: ";
+                    numOfOpts = 4;
+
+                    WelcomeMenu(infirmPath, infirmWelcome, infirmMsg, numOfOpts, true);
+                    break;
+                case 6:
                     Console.WriteLine("\n>> Exiting your plant shelf...\n\n\n>> Bye!\n");
                     userContinue = false;
                     break;
@@ -74,7 +109,7 @@ class Navigation
             if (userContinue)
             {
                 option = -1;    // Reinitializes option as an invalid number.
-                Console.Write(welcomeMsg);
+                Console.Write(navMsg);
                 option = ValidOptCheck(option, 0, numOfOpts, 0);
             }
         }

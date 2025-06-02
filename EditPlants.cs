@@ -1,15 +1,12 @@
-using System.Runtime.CompilerServices;
-
 class EditPlants
 {
+    // Creates objects for the referenced classes.
+    private static readonly AddPlants addObj = new();
+    private static readonly ViewPlants viewObj = new();
+    private static readonly Navigation navObj = new();
+
     public void EditPlantInfo(string path, int plantIndex, int numOfOpts, bool remove)
     {
-        // Creates objects for referenced classes.
-        AddPlants addObj = new();
-        Navigation navObj = new();
-        Program mainObj = new();
-        ViewPlants viewObj = new();
-
         // Formats the line to be edited.
         string fileLine = File.ReadLines(path).Skip(plantIndex).Take(1).First();    // The file line being edited.
         string[] dividedInfo = fileLine.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -40,7 +37,7 @@ class EditPlants
         // If the plant they selected is not the one they wish to edit, repeat the loop.
         if (confirm == "no")
         {
-            navObj.MenuLoop(3, path, mainObj.welcomeMsg, numOfOpts);
+            navObj.MenuLoop(3, path, Program.navMsg, numOfOpts);
         }
         else if (confirm == "yes" && remove == false)
         {
@@ -74,10 +71,6 @@ class EditPlants
     /* Returns the new and old plant information in a formatted 2D array */
     private static string[,] ReenterInfo(string[] plantInfo, string[,] printPlantInfo)
     {
-        // Creates objects for referenced classes.
-        AddPlants addObj = new();
-        ViewPlants viewObj = new();
-
         string[] newPlantInfo = new string[12];     // Declare new array to hold final values.
         int usedIndxs = 0;                          // Initialize the actual index to be incremented on.
 

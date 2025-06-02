@@ -1,12 +1,13 @@
-using System.Security.Authentication.ExtendedProtection;
-
 class AddPlants
 {
+    // Creates objects for the referenced classes.
+    private static readonly ViewPlants viewObj = new();
+
     public string[] msgPrompt = {"","Species:                    ", "Age:                        ", "Watering Frequency:         ",
          "Sunlight Requirement:       ", "Room Location:              "};
 
     /* Prompts the user to enter their plant's information */
-    public void UserPlantInfo(string path, ViewPlants viewObj)
+    public void UserPlantInfo(string path)
     {
         int plantAge = -1;      // Sets the default age as an invalid value.
         string plantInfo;       // Creates a FileStream object to write to the text file.
@@ -87,7 +88,7 @@ class AddPlants
         }
         else
         {
-            UserPlantInfo(path, viewObj);
+            UserPlantInfo(path);
         }
     }
 
