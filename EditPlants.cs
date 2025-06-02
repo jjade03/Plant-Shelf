@@ -2,8 +2,14 @@ using System.Runtime.CompilerServices;
 
 class EditPlants
 {
-    public void EditPlantInfo(string path, int plantIndex, ViewPlants viewObj)
+    public void EditPlantInfo(string path, int plantIndex, int numOfOpts, bool remove)
     {
+        // Creates objects for referenced classes.
+        AddPlants addObj = new();
+        Navigation navObj = new();
+        Program mainObj = new();
+        ViewPlants viewObj = new();
+
         // Formats the line to be edited.
         string fileLine = File.ReadLines(path).Skip(plantIndex).Take(1).First();    // The file line being edited.
         string[] dividedInfo = fileLine.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -11,17 +17,18 @@ class EditPlants
         string[] plantInfo = viewObj.FormatOutput(dividedInfo);                     // The formatted information.
         string[,] printPlantInfo = new string[plantInfo.Length, 2];                 // Declares a 2D array to hold the new and old plant information.
 
-        // Creates objects for referenced classes.
-        AddPlants addObj = new();
-        Navigation navObj = new();
-
         string confirmMsg = "> Enter 'yes' or 'no' to continue: ";
-        string welcomeMsg = "What would you like to do?\n1. View Plants\n2. Add New Plant\n3. Edit Plant\n4. Exit" +
-    "\n\n> Enter the number corresponding with your selection: ";
-        string newConfirm = "";
+        string newConfirm = "no";
+        string msg = "edit";    // Initializes the string as 'edit'.
+
+        // Redefines the string if the option is set to remove.
+        if (remove == true)
+        {
+            msg = "remove";
+        }
 
         // Prompts user to confirm their selection.
-        Console.WriteLine("\n\nIs this the plant you wish to edit?");
+        Console.WriteLine("\n\nIs this the plant you wish to " + msg + "?");
         foreach (string element in plantInfo)
         {
             Console.WriteLine(element);
@@ -30,30 +37,37 @@ class EditPlants
         string confirm = (Console.ReadLine() ?? "null").ToLower();
         confirm = addObj.YNCheck(confirm, confirmMsg);      // Ensures valid answer is entered.
 
-        // If the information is incorrect, repeat the loop.
+        // If the plant they selected is not the one they wish to edit, repeat the loop.
         if (confirm == "no")
         {
-            navObj.MenuLoop(3, path, welcomeMsg);
+            navObj.MenuLoop(3, path, mainObj.welcomeMsg, numOfOpts);
         }
-
-        // Loops through the appropriate redirections until the user is satisfied with their result.
-        while (confirm == "yes" || newConfirm == "yes")
+        else if (confirm == "yes" && remove == false)
         {
-            printPlantInfo = ReenterInfo(plantInfo, printPlantInfo);
-
-            Console.Write("\nIs this information correct?\n" + confirmMsg);
-            newConfirm = (Console.ReadLine() ?? "null").ToLower();
-            newConfirm = addObj.YNCheck(newConfirm, confirmMsg);      // Ensures valid answer is entered.
-
-            if (newConfirm != "yes")
+            // Otherwise, prompts user to edit the plant, looping through the appropriate redirections until they are satisfied with the result.
+            while (confirm == "yes" && newConfirm != "yes")
             {
-                EditPlantInfo(path, plantIndex, viewObj);             // Returns to start of method.
+                // Prompts user to enter the new information if the edit option is chosen.
+                printPlantInfo = ReenterInfo(plantInfo, printPlantInfo);
+                // Confirms the information the user entered.
+                Console.Write("\nIs this information correct?\n" + confirmMsg);
+                newConfirm = (Console.ReadLine() ?? "null").ToLower();
+                newConfirm = addObj.YNCheck(newConfirm, confirmMsg);
+
+                if (newConfirm != "yes")
+                {
+                    EditPlantInfo(path, plantIndex, numOfOpts, remove);     // Returns to start of method.
+                }
+                else if (newConfirm == "yes" && remove == false)
+                {
+                    EditLine(path, plantIndex, printPlantInfo, remove);     // Writes the line to the file.
+                }
             }
-            else if (confirm == "yes" || newConfirm == "yes")
-            {
-                EditLine(path, plantIndex, printPlantInfo);           // Writes the line to the file.
-                break;
-            }
+        }
+        else if (confirm == "yes" && remove == true)
+        {
+
+            EditLine(path, plantIndex, printPlantInfo, remove);             // Removes the line from the file.
         }
     }
 
@@ -64,8 +78,8 @@ class EditPlants
         AddPlants addObj = new();
         ViewPlants viewObj = new();
 
-        string[] newPlantInfo = new string[12];   // Declare new array to hold final values.
-        int usedIndxs = 0;                        // Initialize the actual index to be incremented on.
+        string[] newPlantInfo = new string[12];     // Declare new array to hold final values.
+        int usedIndxs = 0;                          // Initialize the actual index to be incremented on.
 
         // Adds the original information into the new array.
         for (; usedIndxs < plantInfo.Length; usedIndxs++)
@@ -110,7 +124,7 @@ class EditPlants
     }
 
     /* Removes the old information and inserts the new information in it's place */
-    private static void EditLine(string path, int plantIndex, string[,] printPlantInfo)
+    private static void EditLine(string path, int plantIndex, string[,] printPlantInfo, bool remove)
     {
         string? line = null;     // Holds the contents of the current line.
         int currentLine = -1;
@@ -134,22 +148,28 @@ class EditPlants
                 }
                 else
                 {
-
-                    for (int row = 1; row <= printPlantInfo.GetLength(1) - 1; row++)
+                    if (remove == false)
                     {
-                        Console.WriteLine("\nRewriting file...");
-                        writer.Write(",");
-                        for (int cols = 0; cols < printPlantInfo.GetLength(0); cols++)
+                        for (int row = 1; row <= printPlantInfo.GetLength(1) - 1; row++)
                         {
-                            writer.Write(printPlantInfo[cols, row] + ",");
+                            Console.WriteLine("\nRewriting file...");
+                            writer.Write(",");
+                            for (int cols = 0; cols < printPlantInfo.GetLength(0); cols++)
+                            {
+                                writer.Write(printPlantInfo[cols, row] + ",");
+                            }
+                            writer.Write("\n");
                         }
-                        writer.Write("\n");
+                        Console.WriteLine("\n\n>> Plant information updated in the gallery.\n");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n\n>> Plant removed from the gallery.\n");
                     }
                 }
             }
         }
 
         File.Replace("EditedPlantList.txt", path, "OldPlantListBackup.txt");    // Overwrites the previous content in the file.
-        Console.WriteLine("\n\n>> File line replaced.\n");
     }
 }

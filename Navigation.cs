@@ -19,17 +19,14 @@ class Navigation
             {
                 Console.Write(">> " + e.Message + optionPrompt);
             }
-            Console.WriteLine($"opt: {option}, lowval: {lowVal}");
         }
         return option;
     }
 
     /* Loops through the menu, calling the appropriate methods corresponding with the user's choice */
-    public void MenuLoop(int option, string path, string welcomeMsg)
+    public void MenuLoop(int option, string path, string welcomeMsg, int numOfOpts)
     {
-        bool userContinue = true;   // Defines the loop as true.
-        int numLines = File.ReadAllLines(path).Length - 1;
-        Console.WriteLine(numLines);
+        bool userContinue = true;                               // Defines the loop as true.
         // Creates objects of the referenced classes.
         ViewPlants viewObj = new();
         AddPlants addObj = new();
@@ -55,12 +52,20 @@ class Navigation
                     addObj.UserPlantInfo(path, viewObj);
                     break;
                 case 3:
+                    int numLines = File.ReadAllLines(path).Length - 1;      // Holds the amount of lines in the file.
                     viewObj.OutputPlantInfo(path, true);
                     Console.Write("> Enter the plant's index that you wish to edit: ");
-                    int plantIndex = ValidOptCheck(-1, -1, numLines, 1);       // TEMP VALUES-- Ensures the user entered a valid option.
-                    editObj.EditPlantInfo(path, plantIndex, viewObj);
+                    int plantIndex = ValidOptCheck(-1, -1, numLines, 1);
+                    editObj.EditPlantInfo(path, plantIndex, numOfOpts, false);
                     break;
                 case 4:
+                    numLines = File.ReadAllLines(path).Length - 1;
+                    viewObj.OutputPlantInfo(path, true);
+                    Console.Write("> Enter the plant's index that you wish to remove: ");
+                    plantIndex = ValidOptCheck(-1, -1, numLines, 1);
+                    editObj.EditPlantInfo(path, plantIndex, numOfOpts, true);
+                    break;
+                case 5:
                     Console.WriteLine("\n>> Exiting your plant shelf...\n\n\n>> Bye!\n");
                     userContinue = false;
                     break;
@@ -70,7 +75,7 @@ class Navigation
             {
                 option = -1;    // Reinitializes option as an invalid number.
                 Console.Write(welcomeMsg);
-                option = ValidOptCheck(option, 0, 4, 0);
+                option = ValidOptCheck(option, 0, numOfOpts, 0);
             }
         }
     }

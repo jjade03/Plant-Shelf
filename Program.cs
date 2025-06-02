@@ -1,11 +1,14 @@
 ﻿﻿class Program
 {
+    public string welcomeMsg = "What would you like to do?\n1. View Plants\n2. Add New Plant\n3. Edit Plant\n4. Remove Plant\n5. Exit" +
+    "\n\n> Enter the number corresponding with your selection: ";
     static void Main(string[] args)
     {
         string path = @"PlantList.txt";
-        string welcomeMsg = "What would you like to do?\n1. View Plants\n2. Add New Plant\n3. Edit Plant\n4. Exit" +
+        string welcomeMsg = "What would you like to do?\n1. View Plants\n2. Add New Plant\n3. Edit Plant\n4. Remove Plant\n5. Exit" +
     "\n\n> Enter the number corresponding with your selection: ";
         int option = -1;                 // Initializes 'option' as an invalid number.
+        int numOfOpts = 5;
 
         Navigation navObj = new();       // Creates an object of the 'PlantShelf' class.
 
@@ -16,7 +19,7 @@
         }
 
         Console.Write("Welcome to your plant shelf! " + welcomeMsg);    // Prints a welcome message for the user, prompting them for input.
-        option = navObj.ValidOptCheck(option, 0, 4, 0);                          // Redefines the option as the user's input.
-        navObj.MenuLoop(option, path, welcomeMsg);                      // Calls the 'menuLoop' method from the 'PlantShelf' class
+        option = navObj.ValidOptCheck(option, 0, numOfOpts, 0);            // Redefines the option as the user's input.
+        navObj.MenuLoop(option, path, welcomeMsg, numOfOpts);                      // Calls the 'menuLoop' method from the 'PlantShelf' class
     }
 }
