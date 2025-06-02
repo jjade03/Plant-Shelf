@@ -15,7 +15,7 @@ Additional goals of this project are to expand my knowledge on C# and keep my sk
 
 ### 🌷 Planned Features:
 
--> An infirmiry page to easily keep track of sick plants.
+-> An infirmary page to easily keep track of sick plants.
 
 -> A graveyard page to keep track of deceased plants and their cause of death. This page will allow users to keep track of all the plants they've ever owned and see trends linked to their plants' death.
 
