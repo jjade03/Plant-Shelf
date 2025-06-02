@@ -10,8 +10,10 @@ Additional goals of this project are to expand my knowledge on C# and keep my sk
 
 -> Editing a specific plant from your gallery.
 
-### 🌷 Planned Features:
 -> Removing unwanted plants from your gallery.
+
+
+### 🌷 Planned Features:
 
 -> An infirmiry page to easily keep track of sick plants.
 
